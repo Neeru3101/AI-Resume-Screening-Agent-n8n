@@ -1,0 +1,346 @@
+{
+  "name": "AI Resume Screening System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Apply for the Job",
+        "formDescription": "CRM Developer at Gen AI",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email id",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            },
+            {
+              "fieldType": "hiddenField",
+              "fieldName": "hdn-job-code",
+              "fieldValue": "job-code-002"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -96,
+        128
+      ],
+      "id": "a3ab8420-3ad6-439b-89b4-d54e0b7b3c3b",
+      "name": "On form submit - CRM Developer",
+      "webhookId": "7a5c5c29-ab31-4e31-90ee-3860859a3c96"
+    },
+    {
+      "parameters": {
+        "formTitle": "Apply for the Job",
+        "formDescription": "Full Stack Developer at Gen AI",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email id",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            },
+            {
+              "fieldType": "hiddenField"
+            },
+            {
+              "fieldLabel": "hdn-job-code"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -96,
+        -32
+      ],
+      "id": "546386ff-b56d-4c43-8efd-c75805c9246b",
+      "name": "On form submit - Full Stack Developer",
+      "webhookId": "68fbaf69-1bff-4afb-be84-b6db84c5bdb6"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "Resume",
+        "name": "Shiv Kumar Umar-1.pdf",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1TkUZDPP5jxF7qXXAqlkvOOCAjnWR4o4Q",
+          "mode": "list",
+          "cachedResultName": "Resume",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1TkUZDPP5jxF7qXXAqlkvOOCAjnWR4o4Q"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        144,
+        -48
+      ],
+      "id": "d1c85975-2fbe-4717-b816-6c0b9ba4c5a0",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "L3n2V006H9YZoxmX",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        144
+      ],
+      "id": "e0d3405d-f06d-4339-a429-4cd5b2e63dd0",
+      "name": "Extract Info from Resume"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"telephone\": {\n      \"type\": \"string\",\n      \"description\": \"Phone number of the contact (digits only)\"\n    },\n    \"city\": {\n      \"type\": \"string\",\n      \"description\": \"City of the contact\"\n    },\n    \"full_name\": {\n      \"type\": \"string\",\n      \"description\": \"Full name of the contact\"\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"format\": \"email\",\n      \"description\": \"Email address of the contact\"\n    },\n    \"linkedin_profile\": {\n      \"type\": \"string\",\n      \"format\": \"url\",\n      \"description\": \"LinkedIn Profile of the contact\"\n    }\n  },\n  \"required\": [\n    \"full_name\",\n    \"email\",\n    \"telephone\",\n    \"city\",\n    \"linkedin_profile\"\n  ]\n}",
+        "options": {
+          "systemPromptTemplate": "=You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you should set that value for the attribute to NA."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        144
+      ],
+      "id": "b675f71a-7237-4e32-9d00-26ec25f5d4d7",
+      "name": "Extract Personal Info"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        640
+      ],
+      "id": "165b0ae8-e937-403d-b6e7-4457597d93a8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "GNe2hfWlbAIB2AEB",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Education Qualification",
+              "description": "Summary of academic career, focusing on undergraduate and university  studie.  Summarize in 100 words maximum.",
+              "required": true
+            },
+            {
+              "name": "Job History",
+              "description": "Work History summary, focusing on most recent work expereinces. Summarize in 100 maximum words.",
+              "required": true
+            },
+            {
+              "name": "Skills",
+              "description": "Extract the candidate's technical skils. What software, frameworks, functional skills they are proficient in. Make a bulleted list.",
+              "required": true
+            },
+            {
+              "name": "Experience",
+              "description": "Extract years of Experience and group experience by job function or role type.",
+              "required": true
+            },
+            {
+              "name": "Title & Employer",
+              "description": "Extract most recent job Title and Employer."
+            },
+            {
+              "name": "Total Years Experience",
+              "description": "Extract total years of experience and format as total years Exp."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        384
+      ],
+      "id": "11c5f728-6204-4f50-bb05-eecf521234e6",
+      "name": "Professional Information"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        144
+      ],
+      "id": "a8444d13-abd6-4be6-8eaa-986036ae2334",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submit - Full Stack Developer": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Info from Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submit - CRM Developer": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Info from Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Info from Resume": {
+      "main": [
+        [
+          {
+            "node": "Extract Personal Info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Professional Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract Personal Info",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Professional Information",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Personal Info": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Professional Information": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "eee501fe-56f1-4430-a151-cc0f87648cbe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb13f4008ddb588f27b85eaa5880181088f0dcc1f03870d827e7a18c506c7acc"
+  },
+  "id": "1SY0V4naXL8AXhFz",
+  "tags": []
+}
